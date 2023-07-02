@@ -1,0 +1,45 @@
+sendcolor executed
+we gonna parse the data
+parsecoloratcur enter
+parsecoloratcur
+if field == 1
+ "bitten2up"
+sendfield 6  "bitten2up"
+com_bufinsert
+sendfield 7 hello
+com_bufinsert
+com_buf enter
+sendfield 1  bitten_red
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 2  63 63 63 43 43 42 42 42 42 42 41 41 41 40 40 40
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 3  123
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 4  6
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 5  20480
+com_buf exit
+parsecoloratcur exit, file close
+worked
+is (me) exit
+sendfield 6
+sendfield 7
+sendfield 1
+sendfield 2
+sendfield 3
+sendfield 4
+sendfield 5
+elseif field
+chatcolor
+authorstring
+uploadmeta
+uploader
+well that worked, test

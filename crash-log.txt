@@ -1,0 +1,35 @@
+parsecoloratcur enter
+parsecoloratcur
+if field == 1
+ "the Edge of the Void"
+sendfield 6  "the Edge of the Void"
+com_bufinsert
+ "the depths of Cyberspace"
+sendfield 7  "the depths of Cyberspace"
+com_bufinsert
+com_buf enter
+sendfield 1  1Cyber
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 2  132 133 134 135 124 125 126 127 117 118 119 119 119 119 119 119
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 3  SKINCOLOR_LILAC
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 4  0
+com_buf exit
+if field == 1
+com_buf enter
+sendfield 5  V_AQUAMAP
+ERROR: NetXCmd buffer full, cannot add netcmd 22! (size: 250, needed: 23)
+com_buf exit
+parsecoloratcur exit, file close
+worked
+Map is now "MAP01: Greenflower Zone 1"
+sendfield 6
+sendfield 7
+sendfield 1
