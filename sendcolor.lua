@@ -115,6 +115,7 @@ local function ResetSkincolorFromPnum(pnum)
 end
 
 local function ParseColorAtCur(p, file)
+	print("parsecoloratcur")
 	for field = 1, #colorfields
 		local line = file:read("*l")
 		if not line
@@ -122,19 +123,27 @@ local function ParseColorAtCur(p, file)
 			JANK_Printf(p, "Reached end of file seeking for field " .. colorfields[field])
 			return
 		end
-
+		print("if field == 1")
 		if field == 1
 			if line:sub(1,9):lower() == "#metadata"
+				local notmeta
 				for metafield = metastart, metaend
 					line = file:read("*l")
 					local eq = line:find("=")
-					if eq
+					notmeta = line:find("NAME =")
+					if eq and not test
 						line = $:sub(eq+1)
+						print(line)
 					end
-
-					COM_BufInsertText(p, "sendfield " .. tostring(metafield) .. " " .. line)
+					if notmeta != true
+						print("sendfield " .. tostring(metafield) .. " " .. line)
+						COM_BufInsertText(p, "sendfield " .. tostring(metafield) .. " " .. line)
+						print("com_bufinsert")
+					end
 				end
-				line = file:read("*l")
+				if not notmeta
+					line = file:read("*l")
+				end
 			end
 		end
 
@@ -144,8 +153,10 @@ local function ParseColorAtCur(p, file)
 		end
 		line = $:gsub('["{}]', "") -- strip out quotation marks, curly brackets
 		line = $:gsub(",", " ") -- clear out trailing commas, send each ramp index as separate arguments
-
+		print("com_buf enter")
+		print("sendfield " .. tostring(field) .. " " .. tostring(line))
 		COM_BufInsertText(p, "sendfield " .. tostring(field) .. " " .. line)
+		print("com_buf exit")
 	end
 end
 
@@ -180,8 +191,11 @@ addHook("PlayerSpawn", function(p)
 
 		for line in file:lines()
 			if line:sub(1,9):lower():find("autosend")
+				print("parsecoloratcur enter")
 				ParseColorAtCur(p, file)
+				print("parsecoloratcur exit, file close")
 				file:close()
+				print("worked")
 				return
 			end
 		end
@@ -209,6 +223,7 @@ end)
  * CLIENT COMMANDS *
  *******************/
 COM_AddCommand("sendfield", function(p, fieldnum, ...)
+	print("sendfield " .. fieldnum)
 	if fieldnum == "cancel"
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
@@ -291,6 +306,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		end
 
 	elseif field == "chatcolor"
+		print("elseif field")
 		local temp = unpack(args)
 		if temp:sub(1,2) == "V_" and temp:sub(-3) == "MAP"
 			temp = _G[temp]
@@ -306,7 +322,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 	end
 
 	if value == nil
-		JANK_Printf(p, "Invalid value for field " .. field)
+		print(p, "Invalid value for field " .. field)
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
 		return
@@ -315,9 +331,10 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 	end
 
 	if field == "chatcolor" -- success!
+		print("chatcolor")
 		skincolors[setcolor].accessible = true
 		skincolormetadata[setcolor].pnum = #p
-
+		print("authorstring")
 		local authorstring = ""
 		local authormeta = skincolormetadata[setcolor].author
 		if authormeta and authormeta ~= ""
@@ -330,13 +347,14 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 			colorcode = $ + chat/0x1000
 		end
 		colorcode = string.char($)
-
+		print("uploadmeta")
 		local uploadstring = ""
+		print("uploader")
 		local uploadmeta = skincolormetadata[setcolor].uploader
 		if uploadmeta and uploadmeta ~= ""
 			uploadstring = "\128, downloaded from " .. uploadmeta
 		end
-
+		print("well that worked, test")
 		chatprint(colorcode .. p.name .. "\128 added " .. authorstring .. "color " .. colorcode .. skincolors[setcolor].name .. uploadstring .. "\128!", true)
 
 		COM_BufInsertText(p, "color " .. skincolors[setcolor].name)
@@ -346,6 +364,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 end)
 
 COM_AddCommand("sendcolor", function(p, colorname, filename)
+	print("sendcolor executed")
 	if p.sentcolortime == -1
 		JANK_Printf(p, "\130ERROR: \128You are banned from sendcolor.")
 		return
@@ -393,12 +412,14 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 		if colorname and colorname:lower() == "-auto"
 			colorname = nil
 		end
-
+		print("we gonna parse the data")
 		if colorname
+			print("seekcolorname")
 			local seekcolorname = colorname:lower():gsub('[ ",]', "")
+			print("lastpos")
 			local lastpos = file:seek()
 			local notfound = true
-
+			print("for line in file:lines() start")
 			for line in file:lines()
 				local eq = line:find("=")
 				if eq
@@ -411,9 +432,9 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 					notfound = false
 					break
 				end
-
 				lastpos = file:seek()
 			end
+			print("for line in file:lines() end")
 
 			if notfound
 				COM_BufInsertText(p, "sendfield cancel")
@@ -434,10 +455,13 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 				file:seek("set")
 			end
 		end
-
+		print("parsecoloratcur enter")
 		ParseColorAtCur(p, file)
+		print("parsecoloratcur exit, file close")
 		file:close()
+		print("worked")
 	end
+	print("is (me) exit")
 end)
 
 COM_AddCommand("savecolor", function(p, colorname, filename)
@@ -474,9 +498,10 @@ COM_AddCommand("savecolor", function(p, colorname, filename)
 		colorname = skincolormetadata[colornum].realname
 
 		local authorstring = skincolormetadata[colornum].author or ""
+		local uploaderstring = players[skincolormetadata[colornum].pnum].name or ""
 		s = "#METADATA = " .. colorname .. "\n" ..
 		"#AUTHOR = \"" .. authorstring .. "\"\n" ..
-		"#UPLOADER = \"" .. players[skincolormetadata[colornum].pnum].name .. "\"\n"
+		"#UPLOADER = \"" .. uploaderstring .. "\"\n"
 	else
 		colorname = color.name
 	end
