@@ -261,12 +261,18 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		else
 			skincolormetadata[setcolor].realname = value
 			local appendname = p.name
+			print("appendname = $:gsub enter")
 			appendname = $:gsub(" ", "_")
+			value = $:gsub("%d", "")
+			print("appendname = $:gsub exit")
 			local temp
 			local function set(a) temp=a return a end
+			print("while set(R_GetColorByName) enter")
 			while set(R_GetColorByName(value)) and (temp ~= playerskincolors[#p]) or (value:lower() == "none") -- update for 2.2.7
 				value = $ .. appendname
+				print(value)
 			end
+			print("while set(R_GetColorByName) exit")
 		end
 
 	elseif field == "ramp"
@@ -425,7 +431,7 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 				if eq
 					line = $:sub(eq+1)
 				end
-				line = $:lower():gsub('[ ",]', "")
+				line = $:lower():gsub('[ ",1]', "")
 
 				if line == seekcolorname
 					file:seek("set", lastpos)
