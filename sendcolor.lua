@@ -1,5 +1,13 @@
+-- notes from bitten2up
+-- if you crash this, summit an issue on the github with your sendcolor.txt
+-- https://github.com/bitten2up/sendcolor-srb2
+--
+-- this is an attempt to fix sendcolor enough so then you dont have instacrashers ruining all the fun
+-- now the comments folowing this are from the orignal sendcolor
+
 -- kays#5325
 -- temporary update to just make usable for 2.2.8, still plenty to fix for a real update
+
 /************
  * CONTENTS *
  ************/
@@ -270,7 +278,6 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 			print("while set(R_GetColorByName) enter")
 			while set(R_GetColorByName(value)) and (temp ~= playerskincolors[#p]) or (value:lower() == "none") -- update for 2.2.7
 				value = $ .. appendname
-				print(value)
 			end
 			print("while set(R_GetColorByName) exit")
 		end
