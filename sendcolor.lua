@@ -553,7 +553,7 @@ COM_AddCommand("setauto", function(p, colorname, filename)
 	local file = io.openlocal("client/"..filename, "r")
 
 	if not file
-		print("Could not open"..filename)
+		print("Could not open "..filename)
 		return
 	end
 
