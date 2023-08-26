@@ -2,6 +2,8 @@
 -- if you crash this, summit an issue on the github with your sendcolor.txt
 -- https://github.com/bitten2up/sendcolor-srb2
 --
+-- i guess if you are a server manager, you might be able to post the end of you log, but idk
+
 -- this is an attempt to fix sendcolor enough so then you dont have instacrashers ruining all the fun
 -- now the comments folowing this are from the orignal sendcolor
 
@@ -48,7 +50,6 @@
 	-- allowresend
 
 -- NETVARS
-
 /*************
  * VARIABLES *
  *************/
@@ -311,14 +312,14 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 			value = temp
 		end
 
-	elseif field == "invshade"
+	elseif field == "invshade" then
 		local temp = unpack(args)
 		temp = tonumber($)
 		if (temp ~= nil)-- and temp >= 0 and temp <= 15 -- out of range handled internally so lettem have it I guess
 			value = temp
 		end
 
-	elseif field == "chatcolor"
+	elseif field == "chatcolor" then
 		print("elseif field")
 		local temp = unpack(args)
 		if temp:sub(1,2) == "V_" and temp:sub(-3) == "MAP"
@@ -334,7 +335,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		field = "unknown"
 	end
 
-	if value == nil
+	if value == nil then
 		print(p, "Invalid value for field " .. field)
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
