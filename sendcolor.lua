@@ -1,3 +1,4 @@
+-- orignally created by kays, certan crash fixes made by bitten2up
 -- notes from bitten2up
 -- if you crash this, summit an issue on the github with your sendcolor.txt
 -- https://github.com/bitten2up/sendcolor-srb2
