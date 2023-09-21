@@ -1,11 +1,5 @@
--- orignally created by kays, certan crash fixes made by bitten2up
--- notes from bitten2up
--- if you crash this, summit an issue on the github with your sendcolor.txt
--- https://github.com/bitten2up/sendcolor-srb2
---
--- i guess if you are a server manager, you might be able to post the end of you log, but idk
-
--- this is an attempt to fix sendcolor enough so then you dont have instacrashers ruining all the fun
+-- bitten2up
+-- fixes some of the known crash bugs in sendcolor
 -- now the comments folowing this are from the orignal sendcolor
 
 -- kays#5325
@@ -125,7 +119,6 @@ local function ResetSkincolorFromPnum(pnum)
 end
 
 local function ParseColorAtCur(p, file)
-	print("parsecoloratcur")
 	for field = 1, #colorfields
 		local line = file:read("*l")
 		if not line
@@ -133,7 +126,6 @@ local function ParseColorAtCur(p, file)
 			JANK_Printf(p, "Reached end of file seeking for field " .. colorfields[field])
 			return
 		end
-		print("if field == 1")
 		if field == 1
 			if line:sub(1,9):lower() == "#metadata"
 				local notmeta
@@ -143,12 +135,9 @@ local function ParseColorAtCur(p, file)
 					notmeta = line:find("NAME =")
 					if eq and not test
 						line = $:sub(eq+1)
-						print(line)
 					end
 					if notmeta != true
-						print("sendfield " .. tostring(metafield) .. " " .. line)
 						COM_BufInsertText(p, "sendfield " .. tostring(metafield) .. " " .. line)
-						print("com_bufinsert")
 					end
 				end
 				if not notmeta
@@ -163,10 +152,7 @@ local function ParseColorAtCur(p, file)
 		end
 		line = $:gsub('["{}]', "") -- strip out quotation marks, curly brackets
 		line = $:gsub(",", " ") -- clear out trailing commas, send each ramp index as separate arguments
-		print("com_buf enter")
-		print("sendfield " .. tostring(field) .. " " .. tostring(line))
 		COM_BufInsertText(p, "sendfield " .. tostring(field) .. " " .. line)
-		print("com_buf exit")
 	end
 end
 
@@ -201,11 +187,8 @@ addHook("PlayerSpawn", function(p)
 
 		for line in file:lines()
 			if line:sub(1,9):lower():find("autosend")
-				print("parsecoloratcur enter")
 				ParseColorAtCur(p, file)
-				print("parsecoloratcur exit, file close")
 				file:close()
-				print("worked")
 				return
 			end
 		end
@@ -233,7 +216,6 @@ end)
  * CLIENT COMMANDS *
  *******************/
 COM_AddCommand("sendfield", function(p, fieldnum, ...)
-	print("sendfield " .. fieldnum)
 	if fieldnum == "cancel"
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
@@ -271,17 +253,13 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		else
 			skincolormetadata[setcolor].realname = value
 			local appendname = p.name
-			print("appendname = $:gsub enter")
 			appendname = $:gsub(" ", "_")
 			value = $:gsub("%d", "")
-			print("appendname = $:gsub exit")
 			local temp
 			local function set(a) temp=a return a end
-			print("while set(R_GetColorByName) enter")
 			while set(R_GetColorByName(value)) and (temp ~= playerskincolors[#p]) or (value:lower() == "none") -- update for 2.2.7
 				value = $ .. appendname
 			end
-			print("while set(R_GetColorByName) exit")
 		end
 
 	elseif field == "ramp"
@@ -321,7 +299,6 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		end
 
 	elseif field == "chatcolor" then
-		print("elseif field")
 		local temp = unpack(args)
 		if temp:sub(1,2) == "V_" and temp:sub(-3) == "MAP"
 			temp = _G[temp]
@@ -337,7 +314,6 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 	end
 
 	if value == nil then
-		print(p, "Invalid value for field " .. field)
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
 		return
@@ -346,10 +322,8 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 	end
 
 	if field == "chatcolor" -- success!
-		print("chatcolor")
 		skincolors[setcolor].accessible = true
 		skincolormetadata[setcolor].pnum = #p
-		print("authorstring")
 		local authorstring = ""
 		local authormeta = skincolormetadata[setcolor].author
 		if authormeta and authormeta ~= ""
@@ -362,14 +336,11 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 			colorcode = $ + chat/0x1000
 		end
 		colorcode = string.char($)
-		print("uploadmeta")
 		local uploadstring = ""
-		print("uploader")
 		local uploadmeta = skincolormetadata[setcolor].uploader
 		if uploadmeta and uploadmeta ~= ""
 			uploadstring = "\128, downloaded from " .. uploadmeta
 		end
-		print("well that worked, test")
 		chatprint(colorcode .. p.name .. "\128 added " .. authorstring .. "color " .. colorcode .. skincolors[setcolor].name .. uploadstring .. "\128!", true)
 
 		COM_BufInsertText(p, "color " .. skincolors[setcolor].name)
@@ -379,7 +350,6 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 end)
 
 COM_AddCommand("sendcolor", function(p, colorname, filename)
-	print("sendcolor executed")
 	if p.sentcolortime == -1
 		JANK_Printf(p, "\130ERROR: \128You are banned from sendcolor.")
 		return
@@ -427,14 +397,10 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 		if colorname and colorname:lower() == "-auto"
 			colorname = nil
 		end
-		print("we gonna parse the data")
 		if colorname
-			print("seekcolorname")
 			local seekcolorname = colorname:lower():gsub('[ ",]', "")
-			print("lastpos")
 			local lastpos = file:seek()
 			local notfound = true
-			print("for line in file:lines() start")
 			for line in file:lines()
 				local eq = line:find("=")
 				if eq
@@ -449,7 +415,6 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 				end
 				lastpos = file:seek()
 			end
-			print("for line in file:lines() end")
 
 			if notfound
 				COM_BufInsertText(p, "sendfield cancel")
@@ -470,24 +435,20 @@ COM_AddCommand("sendcolor", function(p, colorname, filename)
 				file:seek("set")
 			end
 		end
-		print("parsecoloratcur enter")
 		ParseColorAtCur(p, file)
-		print("parsecoloratcur exit, file close")
 		file:close()
-		print("worked")
 	end
-	print("is (me) exit")
 end)
 
 COM_AddCommand("savecolor", function(p, colorname, filename)
 	if not colorname
-		print("savecolor <colorname> [<filename>]")
+		JANK_Printf(p, "savecolor <colorname> [<filename>]")
 		return
 	end
 
 	local colornum = R_GetColorByName(colorname)
 	if colornum == SKINCOLOR_GREEN and colorname:lower() ~= "green" -- update for 2.2.7
-		print("Couldn't find color " .. colorname)
+		JANK_Printf(p, "Couldn't find color " .. colorname)
 		return
 	end
 
@@ -499,7 +460,7 @@ COM_AddCommand("savecolor", function(p, colorname, filename)
 	local file = io.openlocal("client/"..filename, "a")
 
 	if not file
-		print("Could not open"..filename)
+		JANK_Printf(p, "Could not open"..filename)
 		return
 	end
 
@@ -540,12 +501,12 @@ COM_AddCommand("savecolor", function(p, colorname, filename)
 	file:write(s)
 	file:close()
 
-	print("Saved color " .. colorname)
+	JANK_Printf(p, "Saved color " .. colorname)
 end, COM_LOCAL)
 
 COM_AddCommand("setauto", function(p, colorname, filename)
 	if not colorname
-		print("setauto <colorname> [<filename>]")
+		JANK_Printf(p, "setauto <colorname> [<filename>]")
 		return
 	end
 
@@ -555,7 +516,7 @@ COM_AddCommand("setauto", function(p, colorname, filename)
 	local file = io.openlocal("client/"..filename, "r")
 
 	if not file
-		print("Could not open "..filename)
+		JANK_Printf(p, "Could not open "..filename)
 		return
 	end
 
@@ -584,7 +545,7 @@ COM_AddCommand("setauto", function(p, colorname, filename)
 	end
 
 	if seeking
-		print("Couldn't find color " .. colorname)
+		JANK_Printf(p, "Couldn't find color " .. colorname)
 		file:close()
 		return
 	end
@@ -594,7 +555,7 @@ COM_AddCommand("setauto", function(p, colorname, filename)
 	file = io.openlocal("client/"..filename, "w")
 
 	if not file
-		print("Could not write to " .. filename)
+		JANK_Printf(p, "Could not write to " .. filename)
 		return
 	end
 
@@ -611,7 +572,7 @@ COM_AddCommand("setauto", function(p, colorname, filename)
 	file:write(s)
 	file:close()
 
-	print("Set " .. colorname .. " to autosend")
+	JANK_Printf(p, "Set " .. colorname .. " to autosend")
 end, COM_LOCAL)
 
 /***************
