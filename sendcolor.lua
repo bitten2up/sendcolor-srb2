@@ -313,12 +313,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		field = "unknown"
 	end
 
-<<<<<<< HEAD
-	if value == nil then
-=======
 	if value == nil
-		print(p, "Invalid value for field " .. field)
->>>>>>> dev
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
 		return
