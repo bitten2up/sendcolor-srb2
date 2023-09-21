@@ -133,7 +133,7 @@ local function ParseColorAtCur(p, file)
 					line = file:read("*l")
 					local eq = line:find("=")
 					notmeta = line:find("NAME =")
-					if eq and not test
+					if eq
 						line = $:sub(eq+1)
 					end
 					if notmeta != true
