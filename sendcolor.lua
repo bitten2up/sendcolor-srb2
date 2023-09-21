@@ -313,14 +313,14 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 			value = temp
 		end
 
-	elseif field == "invshade" then
+	elseif field == "invshade"
 		local temp = unpack(args)
 		temp = tonumber($)
 		if (temp ~= nil)-- and temp >= 0 and temp <= 15 -- out of range handled internally so lettem have it I guess
 			value = temp
 		end
 
-	elseif field == "chatcolor" then
+	elseif field == "chatcolor"
 		print("elseif field")
 		local temp = unpack(args)
 		if temp:sub(1,2) == "V_" and temp:sub(-3) == "MAP"
@@ -336,7 +336,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 		field = "unknown"
 	end
 
-	if value == nil then
+	if value == nil
 		print(p, "Invalid value for field " .. field)
 		p.sendcolor = nil
 		ResetSkincolorFromPnum(#p)
