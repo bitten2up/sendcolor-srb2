@@ -1,6 +1,6 @@
 -- bitten2up
 -- fixes some of the known crash bugs in sendcolor
--- now the comments folowing this are from the orignal sendcolor
+-- now most of the comments folowing this are from the original sendcolor
 
 -- kays#5325
 -- temporary update to just make usable for 2.2.8, still plenty to fix for a real update
