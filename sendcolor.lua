@@ -1,6 +1,6 @@
 -- bitten2up
 -- fixes some of the known crash bugs in sendcolor
--- now most of the comments folowing this are from the original sendcolor
+-- now most of the comments folowing this are from sendcolor-v7, but i added a few more
 
 -- kays#5325
 -- temporary update to just make usable for 2.2.8, still plenty to fix for a real update
@@ -128,19 +128,19 @@ local function ParseColorAtCur(p, file)
 		end
 		if field == 1
 			if line:sub(1,9):lower() == "#metadata"
-				local notmeta
+				local foundmeta
 				for metafield = metastart, metaend
 					line = file:read("*l")
 					local eq = line:find("=")
-					notmeta = line:find("NAME =")
+					foundmeta = line:find("NAME =")
 					if eq
 						line = $:sub(eq+1)
 					end
-					if notmeta != true
+					if foundmeta != true
 						COM_BufInsertText(p, "sendfield " .. tostring(metafield) .. " " .. line)
 					end
 				end
-				if not notmeta
+				if not foundmeta
 					line = file:read("*l")
 				end
 			end
@@ -254,7 +254,7 @@ COM_AddCommand("sendfield", function(p, fieldnum, ...)
 			skincolormetadata[setcolor].realname = value
 			local appendname = p.name
 			appendname = $:gsub(" ", "_")
-			value = $:gsub("%d", "")
+			value = $:gsub("%d", "") -- check if there is a number in the name
 			local temp
 			local function set(a) temp=a return a end
 			while set(R_GetColorByName(value)) and (temp ~= playerskincolors[#p]) or (value:lower() == "none") -- update for 2.2.7
